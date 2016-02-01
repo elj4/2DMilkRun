@@ -24,62 +24,116 @@ int NumSprites;
 Uint32 NOW;					/*the current time since program started*/
 
 /*some data on the video settings that can be useful for a lot of functions*/
-Uint32 rmask,gmask,bmask,amask;
+static SDL_Window   *   __gt_graphics_main_window = NULL;
+static SDL_Renderer *   __gt_graphics_renderer = NULL;
+static SDL_Texture  *   __gt_graphics_texture = NULL;
+static SDL_Surface  *   __gt_graphics_surface = NULL;
+static SDL_Surface  *   __gt_graphics_temp_buffer = NULL;
 
-
-void Init_Graphics()
+static int __gt_bitdepth;
+static Uint32 __gt_rmask;
+static Uint32 __gt_gmask;
+static Uint32 __gt_bmask;
+static Uint32 __gt_amask;
+void gt_graphics_close();
+void Init_Graphics(
+char *windowName,
+int viewWidth,
+int viewHeight,
+int renderWidth,
+int renderHeight,
+float bgcolor[4],
+int fullscreen)
 {
-    Uint32 Vflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-	const char *game_name = "Gametest Application";
-    int xres = 1024;
-    int yres = 768;
-    #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    rmask = 0xff000000;
-    gmask = 0x00ff0000;
-    bmask = 0x0000ff00;
-    amask = 0x000000ff;
-    #else
-    rmask = 0x000000ff;
-    gmask = 0x0000ff00;
-    bmask = 0x00ff0000;
-    amask = 0xff000000;
-    #endif
-	SDL_Window *window = NULL;
-    if ( SDL_Init(SDL_INIT_AUDIO|SDL_INIT_VIDEO) < 0 )
-    {
-        fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-        exit(1);
+Uint32 flags =0;
+
+
+	if(SDL_Init(SDL_INIT_EVERYTHING) !=0){
+        printf("Unable to initilazie SDL system: %s", SDL_GetError());
+        return;
     }
     atexit(SDL_Quit);
+	if (fullscreen)
+    {
+       if (renderWidth == 0)
+        {
+			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        }
+        else
+        {
+            flags |= SDL_WINDOW_FULLSCREEN;
+        }
+    }
+    __gt_graphics_main_window = SDL_CreateWindow(windowName,
+                             SDL_WINDOWPOS_UNDEFINED,
+                             SDL_WINDOWPOS_UNDEFINED,
+                             renderWidth, renderHeight,
+                             flags);
 
 	//Attempt to create the window with OpenGL first
-    if((window = SDL_CreateWindow(game_name, 0, 0, xres, yres, Vflags)))
-    {
-       printf("Window Creation Successful with OpenGL rendering.\n");
-    }
+	if(!__gt_graphics_main_window){
+		printf("failed to create main window: %s", SDL_GetError());
+		gt_graphics_close();
+		return;
+	}
 	//Otherwise allow the system to decide the rendering pipeline API
-    else if((window = SDL_CreateWindow(game_name, 0, 0, 1024, 768, SDL_WINDOW_SHOWN)))
-    {
-       printf("Window Creation Successful with hardware rendering.\n");
-    }
+    __gt_graphics_renderer = SDL_CreateRenderer(__gt_graphics_main_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	if(!__gt_graphics_renderer){
+		printf("failed to create renderer: %s", SDL_GetError());
+		gt_graphics_close();
+		return;
+	}
 	//Save a pointer to the surface of the window
     videobuffer = SDL_GetWindowSurface(window);
-    if ( videobuffer == NULL )
+    
+     
+    SDL_SetRenderDrawColor(__gt_graphics_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(__gt_graphics_renderer);
+    SDL_RenderPresent(__gt_graphics_renderer);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_RenderSetLogicalSize(__gt_graphics_renderer, renderWidth, renderHeight);
+
+    __gt_graphics_texture = SDL_CreateTexture(
+        __gt_graphics_renderer,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        renderWidth, renderHeight);
+    if (!__gt_graphics_texture)
+	{
+		printf("failed to create screen texture: %s",SDL_GetError());
+        gt_graphics_close();
+        return;
+	}
+    
+	SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_ARGB8888,
+                                    &__gt_bitdepth,
+                                    &__gt_rmask,
+                                    &__gt_gmask,
+                                    &__gt_bmask,
+                                    &__gt_amask);
+
+    
+    __gt_graphics_surface = SDL_CreateRGBSurface(0, renderWidth, renderHeight, __gt_bitdepth,
+                                        __gt_rmask,
+                                    __gt_gmask,
+                                    __gt_bmask,
+                                    __gt_amask);
+    
+    if (!__gt_graphics_surface)
     {
-        fprintf(stderr, "Unable to set 1024x768 video: %s\n", SDL_GetError());
-        exit(1);
+        printf("failed to create screen surface: %s",SDL_GetError());
+        gt_graphics_close();
+        return;
     }
-    Camera.x = 0;
-    Camera.y = 0;
-    Camera.w = videobuffer->w;/*we want to make sure that our camera is the same size of the video screen*/
-    Camera.h = videobuffer->h;
-    SDL_ShowCursor(SDL_DISABLE);/*don't show the mouse */
+        
+    atexit(gt_graphics_close);
+    printf("graphics initialized");
 }
 
 
 void ResetBuffer()
 {
-    SDL_BlitSurface(buffer,&Camera,videobuffer,NULL);
+    SDL_RenderPresent(__gt_graphics_renderer);
 }
 
 void NextFrame()
@@ -90,6 +144,35 @@ void NextFrame()
   NOW = SDL_GetTicks();
 /*  fprintf(stdout,"Ticks passed this frame: %i\n", NOW - Then);*/
   FrameDelay(33); /*this will make your frame rate about 30 frames per second.  If you want 60 fps then set it to about 15 or 16*/
+}
+
+void gt_graphics_close()
+{
+    if (__gt_graphics_texture)
+    {
+        SDL_DestroyTexture(__gt_graphics_texture);
+    }
+    if (__gt_graphics_renderer)
+    {
+        SDL_DestroyRenderer(__gt_graphics_renderer);
+    }
+    if (__gt_graphics_main_window)
+    {
+        SDL_DestroyWindow(__gt_graphics_main_window);
+    }
+    if (__gt_graphics_surface)
+    {
+        SDL_FreeSurface(__gt_graphics_surface);
+    }
+    if (__gt_graphics_temp_buffer)
+    {
+        SDL_FreeSurface(__gt_graphics_temp_buffer);
+    }
+    __gt_graphics_surface = NULL;
+    __gt_graphics_main_window = NULL;
+    __gt_graphics_renderer = NULL;
+    __gt_graphics_texture = NULL;
+    __gt_graphics_temp_buffer = NULL;
 }
 
 /*
