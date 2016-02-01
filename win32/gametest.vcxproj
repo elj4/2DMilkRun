@@ -44,12 +44,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libraries\SDL2_ttf-2.0.12\include;C:\Libraries\SDL2_mixer-2.0.0\include;C:\Libraries\SDL2_image-2.0.0\include;C:\Libraries\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_image-2.0.1\include;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_ttf-2.0.13\include;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_mixer-2.0.1\include;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2-2.0.4\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ReferencePath>C:\Libraries\SDL2_ttf-2.0.12\lib\x86;C:\Libraries\SDL2_mixer-2.0.0\lib\x86;C:\Libraries\SDL2_image-2.0.0\lib\x86;C:\Libraries\SDL2-2.0.3\lib\x86;$(ReferencePath)</ReferencePath>
-    <LibraryPath>C:\Libraries\SDL2_ttf-2.0.12\lib\x86;C:\Libraries\SDL2_mixer-2.0.0\lib\x86;C:\Libraries\SDL2_image-2.0.0\lib\x86;C:\Libraries\SDL2-2.0.3\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>..</OutDir>
+    <ReferencePath>C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_ttf-2.0.13\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_mixer-2.0.1\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_image-2.0.1\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2-2.0.4\lib\x86;$(ReferencePath)</ReferencePath>
+    <LibraryPath>C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_ttf-2.0.13\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_mixer-2.0.1\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2_image-2.0.1\lib\x86;C:\Users\Elvis\Desktop\2DGameMilkRun\SDL2-2.0.4\lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\</OutDir>
+    <TargetName>MilkRun</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Libraries\SDL2_ttf-2.0.12\include;C:\Libraries\SDL2_mixer-2.0.0\include;C:\Libraries\SDL2_image-2.0.0\include;C:\Libraries\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
@@ -67,6 +68,7 @@
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsCpp</CompileAs>
       <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

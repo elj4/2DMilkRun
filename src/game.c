@@ -33,10 +33,11 @@ int main(int argc, char *argv[])
   {
     temp = IMG_Load(imagepath);/*notice that the path is part of the filename*/
   }
-  SDL_FreeSurface(temp);
+  //SDL_FreeSurface(temp);
   if(temp != NULL)
     SDL_BlitSurface(temp,NULL,buffer,NULL);
-  tile = LoadSprite("images/32_32_16_2sprite.png",32,32);
+  SDL_FreeSurface(temp);
+ /* tile = LoadSprite("images/32_32_16_2sprite.png",32,32);
   getCoordinatesFromFile(&tx, &ty,"config.ini");
   fprintf(stdout,"x and y: (%i, %i)\n",tx,ty);
   addCoordinateToFile("config.ini",7,11);
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
         {
             DrawSprite(tile,buffer,(i * tile->w) + tx,ty,0);
         }
-  }
+  }*/
   done = 0;
   do
   {
