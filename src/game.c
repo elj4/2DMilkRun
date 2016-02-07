@@ -20,21 +20,21 @@ void addCoordinateToFile(char *filepath,int x, int y);
 int main(int argc, char *argv[])
 {
   SDL_Surface *temp = NULL;
-
-
   int done;
-
   int tx = 0,ty = 0;
   const Uint8 *keys;
   char imagepath[512];
-  Init_All();
-  if (getImagePathFromFile(imagepath,"config.ini") == 0)
-  {
-    temp = IMG_Load(imagepath);/*notice that the path is part of the filename*/
-  }
+  SDL_Rect srcRect={0,0,900,600};
 
-  if(temp != NULL)
-    SDL_BlitSurface(temp,NULL,buffer,NULL);
+  Init_All();
+  temp= IMG_Load("images/bgtest.png"); /*notice that the path is part of the filename*/
+
+
+  if(temp != NULL){
+	printf("temp image loaded successfully\n");
+	SDL_BlitSurface(temp,NULL,buffer,NULL);
+  }
+  gt_graphics_render_surface_to_screen(temp,srcRect,0,0);
   SDL_FreeSurface(temp);
   
   done = 0;
