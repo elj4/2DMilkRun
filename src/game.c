@@ -5,6 +5,7 @@
 #include <string>
 #include "vector.h"
 #include "Sprite.h"
+#include "simple_logger.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
@@ -36,29 +37,26 @@ int main(int argc, char *argv[])
 	printf("temp image loaded successfully\n");
 	SDL_BlitSurface(temp,NULL,buffer,NULL);
   }
+  slog("get hurr");
   gt_graphics_render_surface_to_screen(temp,srcRect,0,0);
   SDL_FreeSurface(temp);
-  
+  slog("get hurr2");
   done = 0;
   do
   {
 	  //fprintf(stdout, "looping...\n");
     ResetBuffer ();
-    DrawMouse();
+    //DrawMouse();
     NextFrame();
     SDL_PumpEvents();
     keys = SDL_GetKeyboardState(NULL);
     if(keys[SDL_SCANCODE_ESCAPE])done = 1;
   }while(!done);
+  slog("got hurr3");
   exit(0);		/*technically this will end the program, but the compiler likes all functions that can return a value TO return a value*/
   return 0;
 }
 
-void CleanUpAll()
-{
-  CloseSprites();
-  /*any other cleanup functions can be added here*/ 
-}
 
 void Init_All()
 {
@@ -73,9 +71,6 @@ void Init_All()
 	  bgcolor,
 	  0
 	  );
-
-  InitMouse();
-  atexit(CleanUpAll);
 }
 
 int getImagePathFromFile(char *filepath,char * filename)
